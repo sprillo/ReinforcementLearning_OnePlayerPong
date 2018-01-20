@@ -67,7 +67,7 @@ public class PongMain{
 		
 		List episodes = new ArrayList();
 		PongBall.rn.setSeed(1);// Still not fully reproducible: need to find out how to set GradientDescentSarsaLam's seed
-		for(int i = 0; ; i++){
+		for(int i = 0; i < 5000; i++){
 			State s = new GenericOOState(new PongAgent(), new PongBall());
 			SimulatedEnvironment env = new SimulatedEnvironment(domain, s);
 			if(i % 500 == 0){
@@ -77,6 +77,19 @@ public class PongMain{
 			Episode ea = agent.runLearningEpisode(env);
 			episodes.add(ea);	
 			System.out.println("Game finished. Length of game: " + ea.maxTimeStep());
+			env.resetEnvironment();
+		}
+		
+		System.out.println("Stopped training after 5000 iterations. Now just playing.");
+		for(int i = 0; ; i++){
+			State s = new GenericOOState(new PongAgent(), new PongBall());
+			SimulatedEnvironment env = new SimulatedEnvironment(domain, s);
+			
+			env.addObservers(vob);
+			
+			Policy p = agent.planFromState(s);
+			
+			PolicyUtils.rollout(p, env);
 			env.resetEnvironment();
 		}
 		
